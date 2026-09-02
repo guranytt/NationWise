@@ -1,0 +1,6 @@
+{
+  "name": "Civic Data Crawler",
+  "description": "A production-ready broad crawl and document ingestion system for official Nigerian government sources.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

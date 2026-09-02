@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Overwrite default colors to match Technical Dashboard out-of-the-box */
+  --color-slate-950: #0B0E14; /* Deep Canvas bg */
+  --color-slate-900: #0D1117; /* Sidebar panel bg */
+  --color-slate-800: #2D333B; /* Tech border / secondary bg */
+  --color-slate-700: #21262D; /* Select/Hover highlight */
+  --color-slate-600: #30363D;
+  
+  --color-gray-950: #010409;  /* Terminal deep black */
+  --color-gray-900: #161B22;  /* Header & card container bg */
+  --color-gray-800: #21262D;  
+  --color-gray-700: #30363D;
+  --color-gray-500: #8B949E;  /* Secondary / muted text */
+  --color-gray-400: #8B949E;
+  --color-gray-300: #C9D1D9;  
+  --color-gray-200: #E0E0E0;  
+  --color-gray-100: #E0E0E0;  /* Primary text */
+  --color-white: #E0E0E0;
+
+  --color-emerald-950: #161B22; /* Map dark green zones to tech background */
+  --color-emerald-900: #161B22;
+  --color-emerald-800: #238636; /* GitHub green success */
+  --color-emerald-700: #238636; 
+  --color-emerald-600: #2EA043; /* Bright Hover */
+  --color-emerald-500: #238636; 
+  --color-emerald-400: #3FB950; /* Active vibrant green */
+  --color-emerald-300: #58A6FF; /* Active Blue Accent for tabs */
+
+  --color-sky-500: #58A6FF;    /* Accent blue */
+  --color-sky-400: #58A6FF;
+  --color-sky-300: #79C0FF;
+  
+  --color-yellow-500: #D29922; /* Warn Gold */
+  --color-yellow-400: #E3B341;
+  --color-yellow-300: #F2CC60;
+  
+  --color-amber-500: #D29922;  
+  --color-amber-400: #E3B341;
+  
+  --color-rose-500: #F85149;   /* Error Red */
+  --color-rose-400: #F85149;
+  --color-red-500: #F85149;
+  --color-red-400: #F85149;
+
+  --color-purple-500: #BC8CFF; 
+  --color-purple-400: #D3B3FF;
+}
+
+body {
+  background-color: #0B0E14 !important;
+  color: #E0E0E0 !important;
+  font-family: "Inter", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0E14;
+}
+::-webkit-scrollbar-thumb {
+  background: #2D333B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #30363D;
+}

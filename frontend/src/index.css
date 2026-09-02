@@ -1,0 +1,18 @@
+@import url('https://cdn.jsdelivr.net/npm/geist@1.0.3/dist/fonts/geist-sans/style.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased font-sans;
+  }
+}
+
+@layer utilities {
+  .bg-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+    background-size: 30px 30px;
+  }
+}
