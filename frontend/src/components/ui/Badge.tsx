@@ -1,23 +1,23 @@
-import type { HTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 
-export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+interface BadgeProps {
+  children: ReactNode;
+  variant?: 'pending' | 'verified' | 'critical' | 'neutral';
+  className?: string;
 }
 
-const variantStyles = {
-  neutral: 'bg-slate-100 text-slate-800',
-  success: 'bg-green-100 text-green-800',
-  warning: 'bg-yellow-100 text-yellow-800',
-  danger: 'bg-red-100 text-red-800',
-  info: 'bg-blue-100 text-blue-800',
-};
+export function Badge({ children, variant = 'neutral', className = '' }: BadgeProps) {
+  const baseStyle = "inline-flex items-center px-2 py-0.5 text-xs font-sans font-bold uppercase tracking-wider border";
+  
+  const variants = {
+    pending: "bg-pending/10 text-pending border-pending/30",
+    verified: "bg-verified/10 text-verified border-verified/30",
+    critical: "bg-critical/10 text-critical border-critical/30",
+    neutral: "bg-paper text-ink border-rule",
+  };
 
-export function Badge({ className = '', variant = 'neutral', children, ...props }: BadgeProps) {
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${variantStyles[variant]} ${className}`}
-      {...props}
-    >
+    <span className={`${baseStyle} ${variants[variant]} ${className}`}>
       {children}
     </span>
   );

@@ -7,13 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        paper: '#EDEAE0',
+        ink: '#1C1A16',
+        verified: '#1E5945',
+        pending: '#B8802E',
+        critical: '#9A3B2C',
+        rule: '#C9C4B4',
+        // Keeping primary for some generic button states if needed, but styling mostly with new tokens
         primary: {
           50: '#e6f6ef',
           100: '#ccecd4',
           200: '#99d9aa',
           300: '#66c57f',
           400: '#33b255',
-          500: '#008751', // Nigerian Green
+          500: '#008751',
           600: '#007a49',
           700: '#00613a',
           800: '#00482b',
@@ -21,22 +28,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Geist Sans"', 'sans-serif'],
+        serif: ['Merriweather', 'Georgia', 'serif'],
+        sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
       },
-      animation: {
-        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-        'float': 'float 6s ease-in-out infinite',
-      },
-      keyframes: {
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        }
-      }
     },
   },
   plugins: [],

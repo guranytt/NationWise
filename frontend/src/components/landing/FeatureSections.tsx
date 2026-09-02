@@ -1,52 +1,36 @@
 import { Link } from 'react-router';
 
-// ── Feature 1: Report — light section, left text, right mockup ──
 function FeatureReport() {
   return (
-    <div className="py-24 bg-white">
-      <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center max-w-6xl">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-primary-600 mb-4">Step 1</p>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-6">
-            Spot a problem.<br />Report it in minutes.
+    <div className="py-16 border-b border-rule">
+      <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 max-w-6xl">
+        <div className="pr-0 md:pr-12 border-r-0 md:border-r border-rule">
+          <p className="text-sm font-sans uppercase text-ink mb-4">Registry Entry 01</p>
+          <h2 className="text-3xl font-serif text-ink leading-snug mb-6">
+            Public Issue Registration
           </h2>
-          <p className="text-lg text-slate-500 leading-relaxed mb-8">
-            Our streamlined reporting form guides you through describing the issue, selecting the right category, and pinpointing your state and LGA — no registration required.
+          <p className="text-base font-serif text-ink leading-relaxed mb-8 max-w-prose">
+            Submit local problems into the public record. Our reporting protocol captures the location, category, and precise description of the issue to ensure it is routed correctly without requiring a user account.
           </p>
-          <Link to="/report" className="inline-flex items-center gap-2 text-primary-600 font-bold text-lg hover:gap-3 transition-all">
-            File a report <span>→</span>
+          <Link to="/report" className="inline-flex items-center gap-2 text-ink font-sans font-medium hover:underline">
+            File a report &rarr;
           </Link>
         </div>
 
-        {/* Report form mockup */}
-        <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 shadow-sm">
-          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-2">New Issue Report</p>
-            <div className="space-y-1">
-              <div className="text-xs text-slate-400 font-medium">Issue Title</div>
-              <div className="bg-slate-50 rounded-lg px-3 py-2.5 text-sm text-slate-800 border border-slate-100 font-medium">
-                Collapsed drainage on Aba Road...
+        <div className="flex flex-col justify-center">
+          <div className="border border-rule p-6 bg-paper">
+            <p className="text-xs font-sans uppercase text-ink mb-4 border-b border-rule pb-2">Record Preview</p>
+            <div className="space-y-4 font-sans text-sm text-ink">
+              <div>
+                <span className="font-semibold">Title:</span> Collapsed drainage on Aba Road
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <div className="text-xs text-slate-400 font-medium">Category</div>
-                <div className="bg-slate-50 rounded-lg px-3 py-2.5 text-sm text-slate-800 border border-slate-100">Water & Sanitation</div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><span className="font-semibold">Category:</span> Water & Sanitation</div>
+                <div><span className="font-semibold">State:</span> Rivers State</div>
               </div>
-              <div className="space-y-1">
-                <div className="text-xs text-slate-400 font-medium">State</div>
-                <div className="bg-slate-50 rounded-lg px-3 py-2.5 text-sm text-slate-800 border border-slate-100">Rivers State</div>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-xs text-slate-400 font-medium">Description</div>
-              <div className="bg-slate-50 rounded-lg px-3 py-2.5 text-sm text-slate-500 border border-slate-100 h-16">
-                The drainage has collapsed causing flooding of residential areas after every rainfall...
-              </div>
-            </div>
-            <div className="pt-2">
-              <div className="w-full bg-primary-600 text-white text-sm font-bold py-3 rounded-xl text-center">
-                Submit Report
+              <div className="border-t border-rule pt-4 mt-2">
+                <span className="font-semibold block mb-1">Description:</span>
+                <span className="opacity-80 leading-relaxed">The drainage has collapsed causing flooding of residential areas after every rainfall...</span>
               </div>
             </div>
           </div>
@@ -56,57 +40,41 @@ function FeatureReport() {
   );
 }
 
-// ── Feature 2: Route — dark section, right text, left mockup ──
 function FeatureRoute() {
   return (
-    <div className="py-24 bg-slate-900">
-      <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center max-w-6xl">
-        {/* Routing mockup */}
-        <div className="order-2 md:order-1 bg-slate-800 rounded-3xl p-6 border border-slate-700">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">Routing Engine</p>
-          <div className="space-y-3">
-            {[
-              { label: 'Category', value: 'Roads & Transport', icon: '🛣️' },
-              { label: 'State', value: 'Kano State', icon: '📍' },
-              { label: 'LGA', value: 'Kano Municipal', icon: '🏘️' },
-            ].map((row) => (
-              <div key={row.label} className="flex items-center justify-between bg-slate-700/50 rounded-xl px-4 py-3">
-                <span className="text-slate-400 text-sm">{row.icon} {row.label}</span>
-                <span className="text-white text-sm font-semibold">{row.value}</span>
+    <div className="py-16 border-b border-rule bg-paper">
+      <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 max-w-6xl">
+        <div className="order-2 md:order-1 flex flex-col justify-center pr-0 md:pr-12 border-r-0 md:border-r border-rule">
+          <div className="border border-rule p-6 bg-paper">
+            <p className="text-xs font-sans uppercase text-ink mb-4 border-b border-rule pb-2">Routing Protocol</p>
+            <div className="space-y-3 font-sans text-sm text-ink">
+              <div className="flex justify-between border-b border-rule pb-2">
+                <span>Category</span> <span className="font-medium">Roads & Transport</span>
               </div>
-            ))}
-
-            <div className="flex items-center gap-2 py-2">
-              <div className="flex-1 h-px bg-slate-700" />
-              <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">Matched to</div>
-              <div className="flex-1 h-px bg-slate-700" />
-            </div>
-
-            <div className="bg-primary-600/20 border border-primary-500/30 rounded-xl px-4 py-4">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white font-black shrink-0">KW</div>
+              <div className="flex justify-between border-b border-rule pb-2">
+                <span>State</span> <span className="font-medium">Kano State</span>
+              </div>
+              <div className="flex justify-between border-b border-rule pb-2">
+                <span>LGA</span> <span className="font-medium">Kano Municipal</span>
+              </div>
+              <div className="pt-4 flex gap-4 items-start">
+                <div className="font-bold text-verified uppercase tracking-wider text-xs">Assigned</div>
                 <div>
-                  <p className="text-white font-bold">Kano State Public Works</p>
-                  <p className="text-primary-300 text-sm">publicworks@kanostate.gov.ng</p>
-                  <p className="text-slate-400 text-xs mt-1">Roads &amp; Infrastructure Directorate</p>
+                  <div className="font-bold">Kano State Public Works</div>
+                  <div className="opacity-80 text-xs">Roads & Infrastructure Directorate</div>
                 </div>
               </div>
-            </div>
-
-            <div className="text-center">
-              <span className="text-primary-400 text-sm font-bold">2.5× faster</span>
-              <span className="text-slate-500 text-sm"> than manual referrals</span>
             </div>
           </div>
         </div>
 
-        <div className="order-1 md:order-2">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary-400 mb-4">Step 2</p>
-          <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
-            We route it to the right agency. Automatically.
+        <div className="order-1 md:order-2 pl-0 md:pl-4">
+          <p className="text-sm font-sans uppercase text-ink mb-4">Registry Entry 02</p>
+          <h2 className="text-3xl font-serif text-ink leading-snug mb-6">
+            Automated Agency Routing
           </h2>
-          <p className="text-lg text-slate-400 leading-relaxed">
-            No more wondering who to call. Our routing engine maps every issue by category, state, and LGA to the specific government agency responsible — instantly.
+          <p className="text-base font-serif text-ink leading-relaxed">
+            The system maps every issue by category, state, and LGA directly to the responsible government agency. This bypasses manual referrals and creates an immediate point of accountability.
           </p>
         </div>
       </div>
@@ -114,53 +82,38 @@ function FeatureRoute() {
   );
 }
 
-// ── Feature 3: Track — light section, left text, right timeline mockup ──
 function FeatureTrack() {
-  const history = [
-    { status: 'Submitted', time: '2 days ago', color: 'bg-slate-400', textColor: 'text-slate-700', bg: 'bg-slate-50' },
-    { status: 'Acknowledged', time: '1 day ago', color: 'bg-blue-400', textColor: 'text-blue-700', bg: 'bg-blue-50' },
-    { status: 'In Progress', time: '5 hours ago', color: 'bg-yellow-400', textColor: 'text-yellow-700', bg: 'bg-yellow-50' },
-  ];
-
   return (
-    <div className="py-24 bg-white">
-      <div className="container mx-auto px-4 grid md:grid-cols-2 gap-16 items-center max-w-6xl">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-primary-600 mb-4">Step 3</p>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-6">
-            Track every update. Publicly.
+    <div className="py-16 border-b border-rule">
+      <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 max-w-6xl">
+        <div className="pr-0 md:pr-12 border-r-0 md:border-r border-rule">
+          <p className="text-sm font-sans uppercase text-ink mb-4">Registry Entry 03</p>
+          <h2 className="text-3xl font-serif text-ink leading-snug mb-6">
+            Public Tracking & Audit
           </h2>
-          <p className="text-lg text-slate-500 leading-relaxed mb-6">
-            Every status change is logged and publicly visible. No more dead ends. Citizens, journalists, and NGOs can all see how quickly agencies respond.
+          <p className="text-base font-serif text-ink leading-relaxed mb-6">
+            Status changes are logged permanently on the public record. This provides journalists, NGOs, and citizens with citable evidence of agency responsiveness and resolution times.
           </p>
-          <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-2xl border border-primary-100">
-            <span className="text-3xl font-black text-primary-600">40%</span>
-            <p className="text-slate-600 text-sm leading-snug">fewer follow-up visits to government offices by citizens using NationWise</p>
-          </div>
         </div>
 
-        {/* Timeline mockup */}
-        <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-5">Status Timeline</p>
-          <div className="relative space-y-4 before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-            {history.map((entry, i) => (
-              <div key={i} className="relative flex items-start gap-4 pl-2">
-                <div className={`w-6 h-6 rounded-full ${entry.color} flex items-center justify-center shrink-0 z-10 mt-0.5 shadow-sm`}>
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-                <div className={`flex-1 ${entry.bg} rounded-xl px-4 py-3 border border-slate-100`}>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm font-bold ${entry.textColor}`}>{entry.status}</span>
-                    <span className="text-xs text-slate-400">{entry.time}</span>
-                  </div>
-                </div>
+        <div className="flex flex-col justify-center">
+           <div className="border border-rule p-6 bg-paper">
+            <p className="text-xs font-sans uppercase text-ink mb-4 border-b border-rule pb-2">Status Log</p>
+            <div className="space-y-4 font-sans text-sm">
+              <div className="flex justify-between items-center pb-2 border-b border-rule">
+                <span className="text-pending font-semibold">Submitted</span>
+                <span className="text-ink opacity-60 text-xs">2 days ago</span>
               </div>
-            ))}
-            {/* Pending resolved */}
-            <div className="relative flex items-start gap-4 pl-2 opacity-40">
-              <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-dashed border-slate-300 z-10 mt-0.5" />
-              <div className="flex-1 bg-slate-50 rounded-xl px-4 py-3 border border-dashed border-slate-200">
-                <span className="text-sm text-slate-400">Awaiting resolution...</span>
+              <div className="flex justify-between items-center pb-2 border-b border-rule">
+                <span className="text-verified font-semibold">Acknowledged</span>
+                <span className="text-ink opacity-60 text-xs">1 day ago</span>
+              </div>
+              <div className="flex justify-between items-center pb-2 border-b border-rule">
+                <span className="text-pending font-semibold">In Progress</span>
+                <span className="text-ink opacity-60 text-xs">5 hours ago</span>
+              </div>
+               <div className="flex justify-between items-center">
+                <span className="text-ink opacity-50 italic">Awaiting resolution...</span>
               </div>
             </div>
           </div>
@@ -172,10 +125,10 @@ function FeatureTrack() {
 
 export default function FeatureSections() {
   return (
-    <>
+    <div className="bg-paper">
       <FeatureReport />
       <FeatureRoute />
       <FeatureTrack />
-    </>
+    </div>
   );
 }

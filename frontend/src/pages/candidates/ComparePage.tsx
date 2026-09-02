@@ -3,9 +3,9 @@ import { useSearchParams, Link } from 'react-router';
 import { getCompareCandidates } from '../../api/candidates';
 import type { CandidateDetail } from '../../api/candidates';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
-import { ArrowLeft } from 'lucide-react';
+import CountUp from '../../components/ui/CountUp';
 
-const COLORS = ['#16a34a', '#2563eb', '#dc2626', '#eab308'];
+const COLORS = ['#1C1A16', '#1E5945', '#B8802E', '#9A3B2C'];
 
 export default function ComparePage() {
   const [searchParams] = useSearchParams();
@@ -26,18 +26,18 @@ export default function ComparePage() {
   }, [ids.join(',')]);
 
   if (loading) return (
-    <div className="flex justify-center py-20">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+    <div className="flex justify-center py-20 font-sans text-sm uppercase tracking-widest text-ink">
+      Retrieving Files...
     </div>
   );
 
   if (ids.length < 2) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Compare Candidates</h2>
-        <p className="text-gray-600 mb-6">Select at least two candidates to compare them side-by-side.</p>
-        <Link to="/candidates" className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-          Browse Candidates
+        <h2 className="text-2xl font-serif text-ink mb-4">Cross-Reference Registry</h2>
+        <p className="text-ink opacity-70 font-sans mb-6">Select at least two candidate records to cross-reference their dossiers.</p>
+        <Link to="/candidates" className="px-6 py-2 border border-ink text-ink font-sans text-sm hover:bg-ink hover:text-paper transition-colors">
+          Open Registry Directory
         </Link>
       </div>
     );
@@ -48,8 +48,8 @@ export default function ComparePage() {
     { subject: 'Transparency', fullMark: 100 },
     { subject: 'Track Record', fullMark: 100 },
     { subject: 'Integrity', fullMark: 100 },
-    { subject: 'Public Perception', fullMark: 100 },
-    { subject: 'Policy Strength', fullMark: 100 },
+    { subject: 'Perception', fullMark: 100 },
+    { subject: 'Policy', fullMark: 100 },
   ].map(dimension => {
     const dataPoint: any = { subject: dimension.subject, fullMark: dimension.fullMark };
     candidates.forEach((c) => {
@@ -58,8 +58,8 @@ export default function ComparePage() {
         if (dimension.subject === 'Transparency') dataPoint[c.candidate.full_name] = score.transparency_score;
         if (dimension.subject === 'Track Record') dataPoint[c.candidate.full_name] = score.track_record_score;
         if (dimension.subject === 'Integrity') dataPoint[c.candidate.full_name] = score.financial_score;
-        if (dimension.subject === 'Public Perception') dataPoint[c.candidate.full_name] = score.public_trust_score;
-        if (dimension.subject === 'Policy Strength') dataPoint[c.candidate.full_name] = score.governance_score;
+        if (dimension.subject === 'Perception') dataPoint[c.candidate.full_name] = score.public_trust_score;
+        if (dimension.subject === 'Policy') dataPoint[c.candidate.full_name] = score.governance_score;
       } else {
         dataPoint[c.candidate.full_name] = 0;
       }
@@ -69,19 +69,20 @@ export default function ComparePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <Link to="/candidates" className="inline-flex items-center text-green-600 hover:text-green-700 mb-6">
-        <ArrowLeft size={16} className="mr-2" /> Back to Candidates
-      </Link>
+      <div className="flex justify-between items-end border-b border-rule pb-4 mb-8">
+         <h1 className="text-3xl font-serif text-ink">Cross-Reference</h1>
+         <Link to="/candidates" className="font-sans text-sm text-ink hover:underline">
+           &larr; Back to Directory
+         </Link>
+      </div>
       
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Head-to-Head Comparison</h1>
-      
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-[400px]">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Score Dimensions Overlay</h3>
+      <div className="border border-rule bg-paper mb-12 p-8 flex flex-col items-center">
+        <h3 className="font-sans text-xs uppercase tracking-widest text-ink mb-6 border-b border-rule pb-2 w-full text-center">Composite Overlay</h3>
+        <div className="w-full max-w-2xl h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
+              <PolarGrid stroke="#C9C4B4" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#1C1A16', fontSize: 11, fontFamily: 'IBM Plex Sans' }} />
               <PolarRadiusAxis angle={30} domain={[0, 100]} />
               {candidates.map((c, idx) => (
                 <Radar 
@@ -90,80 +91,64 @@ export default function ComparePage() {
                   dataKey={c.candidate.full_name} 
                   stroke={COLORS[idx % COLORS.length]} 
                   fill={COLORS[idx % COLORS.length]} 
-                  fillOpacity={0.3} 
+                  fillOpacity={0.15} 
+                  isAnimationActive={true}
                 />
               ))}
-              <Legend />
+              <Legend wrapperStyle={{ fontFamily: 'IBM Plex Sans', fontSize: '12px' }}/>
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
-          <table className="w-full text-center border-collapse">
-            <thead>
-              <tr className="bg-gray-50 border-b">
-                <th className="py-4 px-4 text-left text-gray-500 font-semibold">Metrics</th>
-                {candidates.map((c) => (
-                  <th key={c.candidate.id} className="py-4 px-4 min-w-[150px]">
-                    <div className="flex flex-col items-center">
-                      {c.candidate.photo_url ? (
-                        <img src={c.candidate.photo_url} alt={c.candidate.full_name} className="w-16 h-16 rounded-full object-cover mb-2" />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xl mb-2">
-                          {c.candidate.full_name.charAt(0)}
-                        </div>
-                      )}
-                      <span className="font-bold text-gray-900">{c.candidate.full_name}</span>
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded mt-1">{c.candidate.party}</span>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b">
-                <td className="py-4 px-4 text-left font-semibold text-gray-700 bg-gray-50">Overall Score</td>
-                {candidates.map(c => (
-                  <td key={c.candidate.id} className="py-4 px-4">
-                    <span className="text-2xl font-bold text-green-600">
-                      {c.score ? Math.round(c.score.overall_score) : 'N/A'}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-              <tr className="border-b">
-                <td className="py-4 px-4 text-left text-gray-600 bg-gray-50">Transparency</td>
-                {candidates.map(c => (
-                  <td key={c.candidate.id} className="py-4 px-4">{c.score ? Math.round(c.score.transparency_score) : '-'}</td>
-                ))}
-              </tr>
-              <tr className="border-b">
-                <td className="py-4 px-4 text-left text-gray-600 bg-gray-50">Track Record</td>
-                {candidates.map(c => (
-                  <td key={c.candidate.id} className="py-4 px-4">{c.score ? Math.round(c.score.track_record_score) : '-'}</td>
-                ))}
-              </tr>
-              <tr className="border-b">
-                <td className="py-4 px-4 text-left text-gray-600 bg-gray-50">Integrity</td>
-                {candidates.map(c => (
-                  <td key={c.candidate.id} className="py-4 px-4">{c.score ? Math.round(c.score.financial_score) : '-'}</td>
-                ))}
-              </tr>
-              <tr className="border-b">
-                <td className="py-4 px-4 text-left text-gray-600 bg-gray-50">Perception</td>
-                {candidates.map(c => (
-                  <td key={c.candidate.id} className="py-4 px-4">{c.score ? Math.round(c.score.public_trust_score) : '-'}</td>
-                ))}
-              </tr>
-              <tr className="border-b">
-                <td className="py-4 px-4 text-left text-gray-600 bg-gray-50">Policy</td>
-                {candidates.map(c => (
-                  <td key={c.candidate.id} className="py-4 px-4">{c.score ? Math.round(c.score.governance_score) : '-'}</td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      </div>
+
+      <div className="border border-rule bg-paper flex flex-col md:flex-row">
+        {candidates.map((c, idx) => (
+          <div key={c.candidate.id} className={`flex-1 p-8 ${idx > 0 ? 'border-t md:border-t-0 md:border-l border-rule' : ''}`}>
+             <div className="mb-6 pb-4 border-b border-rule flex justify-between items-start">
+               <span className="font-sans text-xs text-ink opacity-60">File No. {c.candidate.id.substring(0, 8).toUpperCase()}</span>
+            </div>
+            
+            <div className="mb-8">
+              <h2 className="text-2xl font-serif font-bold text-ink mb-1">{c.candidate.full_name}</h2>
+              <div className="font-sans text-sm text-ink uppercase tracking-wider mb-2 opacity-80">
+                {c.candidate.party}
+              </div>
+              <div className="font-sans text-sm text-ink opacity-80">
+                {c.candidate.position_sought} &bull; {c.candidate.state}
+              </div>
+            </div>
+
+            <div className="mb-8 text-center">
+               <div className="font-sans text-xs uppercase tracking-widest text-ink mb-2">Composite Score</div>
+               <div className="text-5xl font-serif text-ink">
+                  {c.score ? <CountUp end={c.score.overall_score} /> : 'N/A'}
+               </div>
+            </div>
+
+            <div className="space-y-4 font-sans text-sm">
+               <div className="flex justify-between border-b border-rule pb-2">
+                 <span className="text-ink opacity-80">Transparency</span>
+                 <span className="font-medium text-ink">{c.score ? Math.round(c.score.transparency_score) : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-rule pb-2">
+                 <span className="text-ink opacity-80">Track Record</span>
+                 <span className="font-medium text-ink">{c.score ? Math.round(c.score.track_record_score) : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-rule pb-2">
+                 <span className="text-ink opacity-80">Integrity</span>
+                 <span className="font-medium text-ink">{c.score ? Math.round(c.score.financial_score) : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-rule pb-2">
+                 <span className="text-ink opacity-80">Perception</span>
+                 <span className="font-medium text-ink">{c.score ? Math.round(c.score.public_trust_score) : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-rule pb-2">
+                 <span className="text-ink opacity-80">Policy</span>
+                 <span className="font-medium text-ink">{c.score ? Math.round(c.score.governance_score) : '-'}</span>
+               </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

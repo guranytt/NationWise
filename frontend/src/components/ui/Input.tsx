@@ -1,32 +1,26 @@
-import { forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className = '', label, error, id, ...props }, ref) => {
-    return (
-      <div className="w-full">
-        {label && (
-          <label htmlFor={id} className="block text-sm font-medium text-slate-700 mb-1">
-            {label}
-          </label>
-        )}
-        <input
-          ref={ref}
-          id={id}
-          className={`block w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 border transition-colors ${error ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500' : ''} ${className}`}
-          {...props}
-        />
-        {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
-        )}
-      </div>
-    );
-  }
-);
-
-Input.displayName = 'Input';
+export function Input({ label, error, className = '', id, ...props }: InputProps) {
+  return (
+    <div className="flex flex-col gap-1 w-full font-sans">
+      {label && (
+        <label htmlFor={id} className="text-sm text-ink mb-1">
+          {label}
+        </label>
+      )}
+      <input
+        id={id}
+        className={`px-3 py-2 bg-paper border border-rule text-ink text-sm focus:outline-none focus:border-ink placeholder-ink/40 transition-colors ${
+          error ? 'border-critical focus:border-critical' : ''
+        } ${className}`}
+        {...props}
+      />
+      {error && <span className="text-xs text-critical mt-1">{error}</span>}
+    </div>
+  );
+}

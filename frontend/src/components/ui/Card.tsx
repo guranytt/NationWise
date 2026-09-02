@@ -1,32 +1,29 @@
-import type { HTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 
-export function Card({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function Card({ children, className = '' }: CardProps) {
   return (
-    <div className={`bg-white shadow rounded-lg overflow-hidden border border-slate-100 ${className}`} {...props}>
+    <div className={`bg-paper border border-rule flex flex-col ${className}`}>
       {children}
     </div>
   );
 }
 
-export function CardHeader({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function CardBody({ children, className = '' }: CardProps) {
   return (
-    <div className={`px-4 py-5 border-b border-slate-200 sm:px-6 ${className}`} {...props}>
+    <div className={`p-5 flex flex-col flex-grow ${className}`}>
       {children}
     </div>
   );
 }
 
-export function CardBody({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function CardFooter({ children, className = '' }: CardProps) {
   return (
-    <div className={`px-4 py-5 sm:p-6 ${className}`} {...props}>
-      {children}
-    </div>
-  );
-}
-
-export function CardFooter({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`px-4 py-4 bg-slate-50 border-t border-slate-200 sm:px-6 ${className}`} {...props}>
+    <div className={`px-5 py-3 border-t border-rule bg-paper/50 ${className}`}>
       {children}
     </div>
   );

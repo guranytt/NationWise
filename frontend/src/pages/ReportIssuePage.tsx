@@ -47,7 +47,7 @@ export default function ReportIssuePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!visitorId) {
-      setError("Still calculating anti-spam fingerprint. Please wait a moment.");
+      setError("Still calculating fingerprint. Please wait a moment.");
       return;
     }
     
@@ -73,21 +73,23 @@ export default function ReportIssuePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-slate-900 mb-2">Report a Civic Issue</h1>
-      <p className="text-slate-600 mb-8">
-        Your report will be routed to the appropriate government agency for resolution. Please provide as much detail as possible.
-      </p>
+    <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="mb-8 border-b border-rule pb-4">
+        <h1 className="text-4xl font-serif text-ink mb-2">File Public Report</h1>
+        <p className="text-ink opacity-70 font-sans">
+          This record will be officially routed to the respective agency.
+        </p>
+      </div>
       
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-          <p className="text-red-700">{error}</p>
+        <div className="bg-critical/10 border border-critical/30 p-4 mb-8 font-sans text-sm text-critical">
+          <p>{error}</p>
         </div>
       )}
       
-      <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-paper border border-rule p-8 space-y-6">
         <Input
-          label="Issue Title"
+          label="Record Title"
           id="title"
           placeholder="E.g., Pothole on Awolowo Road, Ikoyi"
           required
@@ -96,25 +98,25 @@ export default function ReportIssuePage() {
         />
         
         <Select
-          label="Category"
+          label="Classification"
           id="category"
           required
-          options={[{ value: '', label: 'Select a category' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
+          options={[{ value: '', label: 'Select classification' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
         />
         
         <Textarea
-          label="Description"
+          label="Detailed Description"
           id="description"
           placeholder="Provide specific details about the issue..."
           required
-          rows={5}
+          rows={6}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-rule">
           <Select
             label="State"
             id="state"
@@ -125,7 +127,7 @@ export default function ReportIssuePage() {
           />
           
           <Select
-            label="LGA"
+            label="L.G.A"
             id="lga"
             required
             disabled={!state}
@@ -135,13 +137,13 @@ export default function ReportIssuePage() {
           />
         </div>
         
-        <div className="pt-4 border-t border-slate-100 flex justify-end">
+        <div className="flex justify-between items-center pt-2">
+          <span className="font-sans text-xs text-ink opacity-60 uppercase tracking-widest">Record will be public</span>
           <Button 
             type="submit" 
-            isLoading={isSubmitting || fingerprintLoading}
-            disabled={!title || !categoryId || !description || !state || !lga}
+            disabled={isSubmitting || fingerprintLoading || !title || !categoryId || !description || !state || !lga}
           >
-            Submit Report
+            {isSubmitting ? 'Filing...' : 'Submit to Registry'}
           </Button>
         </div>
       </form>

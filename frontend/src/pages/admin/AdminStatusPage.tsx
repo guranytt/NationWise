@@ -6,7 +6,6 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Textarea } from '../../components/ui/Textarea';
 import { Button } from '../../components/ui/Button';
-import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 
 export default function AdminStatusPage() {
   const { id } = useParams<{ id: string }>();
@@ -55,87 +54,84 @@ export default function AdminStatusPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-20">Loading...</div>;
+    return <div className="text-center py-20 font-sans text-sm uppercase tracking-widest text-ink">Retrieving File...</div>;
   }
 
   if (!issue) {
-    return <div className="text-center py-20 text-red-500">Issue not found</div>;
+    return <div className="text-center py-20 text-critical font-sans">Issue not found</div>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="max-w-2xl mx-auto py-12 px-4">
       <div className="mb-6">
-        <Link to={`/issues/${id}`} className="text-primary-600 hover:underline">
-          &larr; Back to Issue
+        <Link to={`/issues/${id}`} className="text-ink hover:underline font-sans text-sm">
+          &larr; Back to Record
         </Link>
       </div>
       
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Admin: Update Issue Status</h1>
+      <h1 className="text-2xl font-serif font-bold text-ink mb-6 pb-2 border-b border-rule">Admin: Update Record Status</h1>
       
-      <Card className="mb-8">
-        <CardBody>
-          <h2 className="text-lg font-bold mb-2">{issue.title}</h2>
-          <p className="text-sm text-slate-500 mb-2">Current Status: <span className="font-semibold text-slate-700">{issue.status}</span></p>
-        </CardBody>
-      </Card>
+      <div className="bg-paper border border-rule mb-8 p-6">
+        <h2 className="text-lg font-serif font-bold mb-2 text-ink">{issue.title}</h2>
+        <p className="text-sm text-ink opacity-70 font-sans">Current Status: <span className="font-semibold uppercase tracking-widest">{issue.status}</span></p>
+      </div>
       
-      <Card>
-        <CardHeader>
-          <h3 className="font-bold text-slate-800">Update Form</h3>
-        </CardHeader>
-        <CardBody>
-          {message && (
-            <div className={`p-4 mb-6 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
-              {message.text}
-            </div>
-          )}
-          
-          <form onSubmit={handleUpdate} className="space-y-6">
-            <div className="bg-slate-50 p-4 rounded border border-slate-200 space-y-4">
-              <h4 className="text-sm font-semibold text-slate-700">Authentication Required</h4>
-              <Input
-                label="Admin Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-              <Input
-                label="Admin Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            
-            <Select
-              label="New Status"
-              options={[
-                { value: 'submitted', label: 'Submitted' },
-                { value: 'acknowledged', label: 'Acknowledged' },
-                { value: 'in_progress', label: 'In Progress' },
-                { value: 'resolved', label: 'Resolved' },
-                { value: 'stalled', label: 'Stalled' },
-              ]}
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value as any)}
+      <div className="bg-paper border border-rule p-8">
+        <h3 className="font-sans text-xs uppercase tracking-widest font-bold text-ink mb-6 pb-2 border-b border-rule">Update Entry</h3>
+        
+        {message && (
+          <div className={`p-4 mb-6 text-sm font-sans border ${message.type === 'success' ? 'bg-verified/10 text-verified border-verified/30' : 'bg-critical/10 text-critical border-critical/30'}`}>
+            {message.text}
+          </div>
+        )}
+        
+        <form onSubmit={handleUpdate} className="space-y-6">
+          <div className="bg-rule/10 p-4 border border-rule space-y-4">
+            <h4 className="font-sans text-xs uppercase tracking-widest font-semibold text-ink">Authentication Required</h4>
+            <Input
+              label="Admin Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
-            
-            <Textarea
-              label="Status Note (Optional but recommended)"
-              placeholder="Why is the status changing? e.g. Work has commenced at the site..."
-              rows={4}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
+            <Input
+              label="Admin Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
-            
-            <Button type="submit" isLoading={isUpdating} disabled={!username || !password}>
-              Update Status
+          </div>
+          
+          <Select
+            label="New Status"
+            options={[
+              { value: 'submitted', label: 'Submitted' },
+              { value: 'acknowledged', label: 'Acknowledged' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'resolved', label: 'Resolved' },
+              { value: 'stalled', label: 'Stalled' },
+            ]}
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value as any)}
+            required
+          />
+          
+          <Textarea
+            label="Status Note (Optional)"
+            placeholder="Reason for status change..."
+            rows={4}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+          
+          <div className="pt-4 border-t border-rule">
+            <Button type="submit" disabled={isUpdating || !username || !password}>
+              {isUpdating ? 'Updating...' : 'Commit Status Update'}
             </Button>
-          </form>
-        </CardBody>
-      </Card>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

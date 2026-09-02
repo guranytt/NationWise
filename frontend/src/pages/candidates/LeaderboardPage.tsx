@@ -2,7 +2,21 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { getLeaderboard } from '../../api/candidates';
 import type { LeaderboardEntry } from '../../api/candidates';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { motion } from 'framer-motion';
+import CountUp from '../../components/ui/CountUp';
+import { StaggerContainer, StaggerItem } from '../../components/ui/StaggerReveal';
+
+const getTierColor = (score: number) => {
+  if (score >= 75) return 'bg-verified';
+  if (score >= 50) return 'bg-pending';
+  return 'bg-critical';
+};
+
+const getTierTextColor = (score: number) => {
+  if (score >= 75) return 'text-verified';
+  if (score >= 50) return 'text-pending';
+  return 'text-critical';
+};
 
 export default function LeaderboardPage() {
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
@@ -28,25 +42,16 @@ export default function LeaderboardPage() {
     fetchBoard();
   }, [stateFilter, positionFilter]);
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1: return <Trophy className="text-yellow-400" size={24} />;
-      case 2: return <Medal className="text-gray-400" size={24} />;
-      case 3: return <Award className="text-amber-600" size={24} />;
-      default: return <span className="font-bold text-gray-500 w-6 text-center">{rank}</span>;
-    }
-  };
-
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">NationWise Leaderboard</h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">See who is leading the pack based on data, transparency, and public trust.</p>
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="text-left mb-8 pb-4 border-b border-rule">
+        <h1 className="text-4xl font-serif text-ink mb-2">Registry Rankings</h1>
+        <p className="text-ink opacity-70 font-sans text-sm">Candidates ordered by official composite score.</p>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4 mb-8 justify-center">
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
         <select 
-          className="px-6 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 outline-none text-gray-700 font-medium"
+          className="px-3 py-1.5 border border-rule bg-transparent text-ink font-sans text-sm focus:outline-none focus:border-ink w-full md:w-64"
           value={stateFilter}
           onChange={(e) => setStateFilter(e.target.value)}
         >
@@ -57,7 +62,7 @@ export default function LeaderboardPage() {
           <option value="Rivers">Rivers State</option>
         </select>
         <select 
-          className="px-6 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-green-500 outline-none text-gray-700 font-medium"
+          className="px-3 py-1.5 border border-rule bg-transparent text-ink font-sans text-sm focus:outline-none focus:border-ink w-full md:w-64"
           value={positionFilter}
           onChange={(e) => setPositionFilter(e.target.value)}
         >
@@ -69,56 +74,62 @@ export default function LeaderboardPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+        <div className="flex justify-center py-20 font-sans text-sm uppercase tracking-widest text-ink">
+          Compiling Rankings...
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="border-t border-rule">
           {leaders.length === 0 ? (
-            <div className="text-center py-16 text-gray-500">
-              No candidates found matching the criteria.
+            <div className="text-center py-16 font-sans text-ink opacity-60">
+              No entries found.
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 text-gray-600 border-b">
-                  <th className="py-5 px-6 font-semibold w-16 text-center">Rank</th>
-                  <th className="py-5 px-6 font-semibold">Candidate</th>
-                  <th className="py-5 px-6 font-semibold hidden md:table-cell">Position / State</th>
-                  <th className="py-5 px-6 font-semibold hidden sm:table-cell">Party</th>
-                  <th className="py-5 px-6 font-semibold text-right">Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaders.map(leader => (
-                  <tr key={leader.id} className="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                    <td className="py-4 px-6 text-center">
-                      <div className="flex justify-center">{getRankIcon(leader.rank)}</div>
-                    </td>
-                    <td className="py-4 px-6">
-                      <Link to={`/candidates/${leader.id}`} className="font-bold text-gray-900 hover:text-green-600 transition-colors text-lg">
-                        {leader.full_name}
-                      </Link>
-                    </td>
-                    <td className="py-4 px-6 text-gray-600 hidden md:table-cell">
-                      {leader.position_sought} &bull; {leader.state}
-                    </td>
-                    <td className="py-4 px-6 hidden sm:table-cell">
-                      <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded">
-                        {leader.party}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <span className={`text-xl font-bold ${
-                        leader.rank <= 3 ? 'text-green-600' : 'text-gray-800'
-                      }`}>
-                        {Math.round(leader.overall_score)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <StaggerContainer className="w-full">
+              <div className="flex bg-paper border-b border-rule py-3 font-sans text-xs uppercase tracking-widest text-ink opacity-70">
+                <div className="w-16 text-center shrink-0">Rank</div>
+                <div className="flex-1">Record</div>
+                <div className="w-1/3 min-w-[200px] hidden md:block">Details</div>
+                <div className="w-32 text-right pr-4 shrink-0">Score</div>
+              </div>
+              
+              {leaders.map(leader => (
+                <StaggerItem key={leader.id} className="flex items-center border-b border-rule py-4 hover:bg-rule/10 transition-colors">
+                  <div className="w-16 text-center font-serif text-2xl text-ink shrink-0">
+                    {leader.rank}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0 pr-4">
+                    <Link to={`/candidates/${leader.id}`} className="font-serif font-bold text-lg text-ink hover:underline truncate block">
+                      {leader.full_name}
+                    </Link>
+                    <div className="font-sans text-xs text-ink opacity-70 mt-1 uppercase tracking-wide truncate">
+                      {leader.party} &bull; File {leader.id.substring(0, 6).toUpperCase()}
+                    </div>
+                  </div>
+                  
+                  <div className="w-1/3 min-w-[200px] font-sans text-sm text-ink hidden md:block pr-4 truncate">
+                    <div className="font-semibold">{leader.position_sought}</div>
+                    <div className="opacity-70">{leader.state}</div>
+                  </div>
+                  
+                  <div className="w-32 pr-4 shrink-0 flex flex-col items-end">
+                    <div className={`font-serif text-2xl ${getTierTextColor(leader.overall_score)}`}>
+                      <CountUp end={leader.overall_score} />
+                    </div>
+                    {/* Score Bar */}
+                    <div className="w-full h-1.5 bg-rule/30 mt-2 flex justify-end overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${Math.round(leader.overall_score)}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className={`h-full ${getTierColor(leader.overall_score)}`}
+                      />
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
           )}
         </div>
       )}
