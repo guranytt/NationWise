@@ -28,6 +28,7 @@ from app.api import (
     categories_router, locations_router, issues_router, admin_router,
     candidates_router, scraper_ingest_router
 )
+from app.api.ai_analysis import router as ai_analysis_router
 
 app.include_router(categories_router)
 app.include_router(locations_router)
@@ -35,6 +36,7 @@ app.include_router(issues_router)
 app.include_router(admin_router)
 app.include_router(candidates_router)
 app.include_router(scraper_ingest_router)
+app.include_router(ai_analysis_router)
 
 @app.get("/health")
 async def health_check():

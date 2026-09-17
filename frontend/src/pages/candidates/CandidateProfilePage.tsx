@@ -5,6 +5,8 @@ import type { CandidateDetail } from '../../api/candidates';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { useFingerprint } from '../../hooks/useFingerprint';
 import CountUp from '../../components/ui/CountUp';
+import CandidateInsights from '../../components/ai/CandidateInsights';
+import PromiseTracker from '../../components/ai/PromiseTracker';
 
 export default function CandidateProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -205,6 +207,13 @@ export default function CandidateProfilePage() {
           </div>
         )}
       </div>
+
+      {id && (
+        <>
+          <CandidateInsights candidateId={id} />
+          <PromiseTracker candidateId={id} />
+        </>
+      )}
     </div>
   );
 }
