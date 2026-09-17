@@ -1,12 +1,24 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 from app.config import settings
-from app.database import engine
+from app.database import engine, Base
+from app.seed import seed_database
+import app.models  # ensure models are loaded
+
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Setup
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await seed_database()
+        logger.info("Database auto-initialization and seeding completed.")
+    except Exception as e:
+        logger.error(f"Error during database initialization: {e}")
     yield
     # Teardown
     await engine.dispose()
