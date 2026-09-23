@@ -1,18 +1,24 @@
 import os
+import hmac
+import hashlib
+import logging
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any, Dict
 
 from app.api.deps import get_db
 from app.models.candidate import Candidate
 from app.models.candidate_adventure import CandidateAdventure
-from app.services.pdf_service import upload_pdf_to_supabase, extract_text_from_pdf, chunk_text
+from app.services.pdf_service import upload_pdf_to_supabase, extract_text_from_pdf, chunk_text, get_public_url
 from app.services.embedding_service import generate_embeddings, store_embeddings
 from app.services.adventure_service import generate_adventure
+from app.services.pipeline_service import process_pdf_from_storage
+from app.config import settings
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/adventure", tags=["Adventure"])
 
 class AdventureSection(BaseModel):
@@ -121,3 +127,52 @@ async def candidates_compare(req: CompareRequest, db: AsyncSession = Depends(get
         
     response = await compare_candidates(db, ids_str, names, req.question)
     return {"response": response}
+
+
+# ─────────────────────────────────────────────────────────────
+# Supabase Storage Webhook — fires automatically when you
+# upload a PDF via the Supabase file picker.
+# 
+# File naming convention:  <candidate_uuid>.pdf
+# e.g.  "a3f2e1d0-…-4abc.pdf"   →  candidate is auto-resolved.
+# ─────────────────────────────────────────────────────────────
+@router.post("/webhook/storage", include_in_schema=True)
+async def supabase_storage_webhook(
+    request: Request,
+    background_tasks: BackgroundTasks,
+):
+    """
+    Receives Supabase Storage webhook events.
+    Triggered automatically on INSERT (new file upload) into the candidate-pdfs bucket.
+    """
+    payload: Dict[str, Any] = await request.json()
+    logger.info(f"Storage webhook received: {payload}")
+
+    # Supabase sends the event type and record in the payload
+    event_type = payload.get("type", "")
+    record = payload.get("record", {})
+
+    # We only care about INSERT events (new file uploaded)
+    if event_type not in ("INSERT", ""):
+        logger.info(f"Ignoring webhook event type: {event_type}")
+        return {"status": "ignored"}
+
+    # Extract the bucket and file path
+    bucket_id = record.get("bucket_id", "")
+    file_name = record.get("name", "")
+
+    if bucket_id != "candidate-pdfs" or not file_name:
+        # Also try top-level payload structure some Supabase versions use
+        bucket_id = payload.get("bucket_id", bucket_id)
+        file_name = payload.get("name", file_name)
+
+    if not file_name:
+        logger.warning(f"Could not extract file name from webhook payload: {payload}")
+        return {"status": "error", "detail": "Could not parse file path from payload"}
+
+    logger.info(f"New PDF uploaded: bucket='{bucket_id}', path='{file_name}'")
+
+    # Run the full PDF processing pipeline in the background so we respond immediately
+    background_tasks.add_task(process_pdf_from_storage, file_name)
+
+    return {"status": "accepted", "message": f"Processing '{file_name}' in background..."}

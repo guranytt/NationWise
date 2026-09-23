@@ -1,38 +1,59 @@
 import fitz  # PyMuPDF
-import io
 import logging
-import asyncio
 from supabase import create_client, Client
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Initialize Supabase client
-supabase: Client | None = None
-if settings.SUPABASE_DATABASE_URL and hasattr(settings, "SUPABASE_URL") and hasattr(settings, "SUPABASE_SERVICE_KEY"):
-    if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_KEY:
-        supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
+# Initialize Supabase client (singleton)
+_supabase_client: Client | None = None
+
+def get_supabase_client() -> Client | None:
+    global _supabase_client
+    if _supabase_client is None:
+        if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_KEY:
+            _supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
+    return _supabase_client
+
+def download_pdf_from_supabase(file_path: str) -> bytes | None:
+    """Downloads a PDF from Supabase Storage and returns the raw bytes."""
+    client = get_supabase_client()
+    if not client:
+        logger.warning("Supabase client not initialized. Cannot download PDF.")
+        return None
+    try:
+        bucket = "candidate-pdfs"
+        response = client.storage.from_(bucket).download(file_path)
+        return response
+    except Exception as e:
+        logger.error(f"Failed to download PDF '{file_path}' from Supabase: {e}")
+        return None
 
 async def upload_pdf_to_supabase(file_bytes: bytes, filename: str) -> str | None:
     """Uploads PDF to Supabase storage and returns the public URL."""
-    if not supabase:
+    client = get_supabase_client()
+    if not client:
         logger.warning("Supabase client not initialized. Cannot upload PDF.")
         return None
-    
     try:
-        # Assuming bucket name is 'candidate-pdfs'
         bucket = "candidate-pdfs"
-        response = supabase.storage.from_(bucket).upload(
+        client.storage.from_(bucket).upload(
             file=file_bytes,
             path=filename,
-            file_options={"content-type": "application/pdf"}
+            file_options={"content-type": "application/pdf", "upsert": "true"}
         )
-        # return the path or public URL
-        public_url = supabase.storage.from_(bucket).get_public_url(filename)
+        public_url = client.storage.from_(bucket).get_public_url(filename)
         return public_url
     except Exception as e:
         logger.error(f"Failed to upload PDF to Supabase: {e}")
         return None
+
+def get_public_url(file_path: str) -> str:
+    """Gets the public URL for a file already in Supabase Storage."""
+    client = get_supabase_client()
+    if not client:
+        return ""
+    return client.storage.from_("candidate-pdfs").get_public_url(file_path)
 
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     """Extracts text from a PDF file using PyMuPDF."""
