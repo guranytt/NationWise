@@ -1,152 +1,196 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { getCategories, getStates, getLgas, createIssue } from '../api/issues';
-import type { Category } from '../types';
-import { useFingerprint } from '../hooks/useFingerprint';
-import { Input } from '../components/ui/Input';
-import { Textarea } from '../components/ui/Textarea';
-import { Select } from '../components/ui/Select';
-import { Button } from '../components/ui/Button';
+import React, { useState, useEffect } from 'react';
+import { getCategories } from '../../api/categories';
+import { getLocations } from '../../api/locations';
+import { createIssue } from '../../api/issues';
+import GlassCard from '../../components/ui/GlassCard';
+import { MapPin, AlertCircle, CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function ReportIssuePage() {
-  const navigate = useNavigate();
-  const { visitorId, isLoading: fingerprintLoading } = useFingerprint();
-  
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [states, setStates] = useState<string[]>([]);
   const [lgas, setLgas] = useState<string[]>([]);
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [state, setState] = useState('');
   const [lga, setLga] = useState('');
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      getCategories(),
-      getStates(),
-    ]).then(([cats, stts]) => {
-      setCategories(cats);
-      setStates(stts);
+    getCategories().then(setCategories);
+    getLocations().then(data => {
+      setStates(data.map(d => d.state));
     });
   }, []);
 
   useEffect(() => {
     if (state) {
-      getLgas(state).then(setLgas).catch(() => setLgas([]));
+      getLocations().then(data => {
+        const stateData = data.find(d => d.state === state);
+        if (stateData) {
+          setLgas(stateData.lgas);
+        } else {
+          setLgas([]);
+        }
+      });
       setLga('');
-    } else {
-      setLgas([]);
     }
   }, [state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!visitorId) {
-      setError("Still calculating fingerprint. Please wait a moment.");
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setError(null);
+    setSubmitting(true);
     
     try {
-      const newIssue = await createIssue({
+      await createIssue({
         title,
         description,
         category_id: categoryId,
         state,
-        lga,
-        fingerprint_visitor_id: visitorId,
+        lga: lga || undefined,
+        status: 'Reported'
       });
-      
-      navigate(`/issues/${newIssue.id}`);
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit issue. Please try again.');
+      setSuccess(true);
+      toast.success("Issue reported successfully!");
+    } catch (err) {
+      toast.error("Failed to report issue. Please try again.");
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
+  if (success) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 text-center animate-in fade-in zoom-in duration-500">
+        <GlassCard className="p-12 flex flex-col items-center">
+          <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+          </div>
+          <h2 className="text-3xl font-display font-bold text-nw-text-light dark:text-nw-text-dark mb-4">
+            Report Submitted
+          </h2>
+          <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted mb-8">
+            Thank you for bringing this to our attention. An email has been dispatched to the relevant agency automatically.
+          </p>
+          <button 
+            onClick={() => {
+              setSuccess(false);
+              setTitle('');
+              setDescription('');
+              setCategoryId('');
+            }}
+            className="btn-primary"
+          >
+            Submit Another Report
+          </button>
+        </GlassCard>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
-      <div className="mb-8 border-b border-rule pb-4">
-        <h1 className="text-4xl font-serif text-ink mb-2">File Public Report</h1>
-        <p className="text-ink opacity-70 font-sans">
-          This record will be officially routed to the respective agency.
+    <div className="max-w-3xl mx-auto animate-in fade-in duration-500">
+      <div className="mb-10">
+        <h1 className="text-4xl font-display font-bold text-nw-text-light dark:text-nw-text-dark mb-3">
+          Report an Issue
+        </h1>
+        <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted">
+          Your report will be publicly visible and automatically routed to the responsible government agency via email.
         </p>
       </div>
-      
-      {error && (
-        <div className="bg-critical/10 border border-critical/30 p-4 mb-8 font-sans text-sm text-critical">
-          <p>{error}</p>
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className="bg-paper border border-rule p-8 space-y-6">
-        <Input
-          label="Record Title"
-          id="title"
-          placeholder="E.g., Pothole on Awolowo Road, Ikoyi"
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        
-        <Select
-          label="Classification"
-          id="category"
-          required
-          options={[{ value: '', label: 'Select classification' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-        />
-        
-        <Textarea
-          label="Detailed Description"
-          id="description"
-          placeholder="Provide specific details about the issue..."
-          required
-          rows={6}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-rule">
-          <Select
-            label="State"
-            id="state"
-            required
-            options={[{ value: '', label: 'Select a state' }, ...states.map(s => ({ value: s, label: s }))]}
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-          />
-          
-          <Select
-            label="L.G.A"
-            id="lga"
-            required
-            disabled={!state}
-            options={[{ value: '', label: 'Select an LGA' }, ...lgas.map(l => ({ value: l, label: l }))]}
-            value={lga}
-            onChange={(e) => setLga(e.target.value)}
-          />
-        </div>
-        
-        <div className="flex justify-between items-center pt-2">
-          <span className="font-sans text-xs text-ink opacity-60 uppercase tracking-widest">Record will be public</span>
-          <Button 
-            type="submit" 
-            disabled={isSubmitting || fingerprintLoading || !title || !categoryId || !description || !state || !lga}
-          >
-            {isSubmitting ? 'Filing...' : 'Submit to Registry'}
-          </Button>
-        </div>
-      </form>
+
+      <GlassCard className="p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-medium mb-2">Issue Title</label>
+              <input
+                type="text"
+                required
+                className="input-field"
+                placeholder="Briefly describe the issue..."
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+              />
+            </div>
+            
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-medium mb-2">Detailed Description</label>
+              <textarea
+                required
+                rows={5}
+                className="input-field resize-none"
+                placeholder="Provide as much detail as possible to help agencies identify the problem..."
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Category</label>
+              <select
+                required
+                className="input-field"
+                value={categoryId}
+                onChange={e => setCategoryId(e.target.value)}
+              >
+                <option value="" disabled>Select Category</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">State</label>
+              <select
+                required
+                className="input-field"
+                value={state}
+                onChange={e => setState(e.target.value)}
+              >
+                <option value="" disabled>Select State</option>
+                {states.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {lgas.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Local Government Area (Optional)</label>
+                <select
+                  className="input-field"
+                  value={lga}
+                  onChange={e => setLga(e.target.value)}
+                >
+                  <option value="">Select LGA</option>
+                  {lgas.map(l => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div className="pt-6 border-t border-black/10 dark:border-white/10 flex items-center justify-between">
+            <div className="flex items-center text-xs text-nw-text-light-muted dark:text-nw-text-dark-muted">
+              <AlertCircle className="w-4 h-4 mr-2" />
+              Your IP is recorded to prevent spam.
+            </div>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn-primary flex items-center px-8"
+            >
+              {submitting ? 'Submitting...' : 'Submit Report'}
+            </button>
+          </div>
+        </form>
+      </GlassCard>
     </div>
   );
 }

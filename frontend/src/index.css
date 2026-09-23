@@ -3,14 +3,59 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-color: #F0FDF4; /* nw-light-bg */
+    --text-color: #111827; /* nw-text-light */
+    --text-muted: #6B7280; /* nw-text-light-muted */
+  }
+
+  .dark {
+    --bg-color: #0A0F0D; /* nw-dark-bg */
+    --text-color: #F0FDF4; /* nw-text-dark */
+    --text-muted: #9CA3AF; /* nw-text-dark-muted */
+  }
+
   body {
-    @apply bg-paper text-ink antialiased font-sans;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    @apply transition-colors duration-300 font-sans;
   }
 }
 
-@layer utilities {
-  .bg-pattern {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 2px, transparent 2px);
-    background-size: 30px 30px;
+@layer components {
+  /* Reusable Glassmorphism classes */
+  .glass-card {
+    @apply bg-white/70 border border-black/10 backdrop-blur-xl shadow-sm rounded-2xl dark:bg-white/5 dark:border-white/10;
   }
+  
+  .glass-panel {
+    @apply bg-white/40 border-t border-black/5 backdrop-blur-md dark:bg-white/5 dark:border-white/10;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-nw-primary text-white rounded-lg font-medium hover:bg-nw-primary-light transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-black/5 text-nw-text-light hover:bg-black/10 rounded-lg font-medium transition-colors duration-200 dark:bg-white/5 dark:text-nw-text-dark dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 bg-white/50 border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-nw-primary/50 text-nw-text-light dark:bg-white/5 dark:border-white/10 dark:text-nw-text-dark dark:focus:ring-nw-primary/50 transition-all placeholder-nw-text-light-muted dark:placeholder-nw-text-dark-muted;
+  }
+}
+
+/* Custom Scrollbar for dark theme */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #0A0F0D;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }

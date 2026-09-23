@@ -1,106 +1,141 @@
-import { useState, useEffect } from 'react';
-import { getIssues, getCategories, getStates } from '../api/issues';
-import type { Issue, Category } from '../types';
-import IssueCard from '../components/issues/IssueCard';
-import { Select } from '../components/ui/Select';
-import { Button } from '../components/ui/Button';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { getIssues, type IssueList } from '../../api/issues';
+import GlassCard from '../components/ui/GlassCard';
+import Badge from '../components/ui/Badge';
+import { Clock, MapPin, Search, Filter } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function IssueFeedPage() {
-  const [issues, setIssues] = useState<Issue[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [states, setStates] = useState<string[]>([]);
-  
+  const [issues, setIssues] = useState<IssueList[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Filters
-  const [categoryId, setCategoryId] = useState('');
-  const [state, setState] = useState('');
-  const [status, setStatus] = useState('');
-  
+  const [search, setSearch] = useState('');
+  const [filterState, setFilterState] = useState('');
+
   useEffect(() => {
-    Promise.all([
-      getCategories(),
-      getStates(),
-    ]).then(([cats, stts]) => {
-      setCategories(cats);
-      setStates(stts);
-    });
+    loadIssues();
   }, []);
 
-  const fetchIssues = async () => {
-    setLoading(true);
+  const loadIssues = async () => {
     try {
-      const params: Record<string, string> = {};
-      if (categoryId) params.category_id = categoryId;
-      if (state) params.state = state;
-      if (status) params.status = status;
-      
-      const data = await getIssues(params);
+      setLoading(true);
+      const data = await getIssues();
       setIssues(data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Failed to load issues", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchIssues();
-  }, [categoryId, state, status]);
+  const filteredIssues = issues.filter(issue => {
+    const matchesSearch = issue.title.toLowerCase().includes(search.toLowerCase()) || 
+                          issue.description.toLowerCase().includes(search.toLowerCase());
+    const matchesState = filterState ? issue.state === filterState : true;
+    return matchesSearch && matchesState;
+  });
+
+  const uniqueStates = Array.from(new Set(issues.map(i => i.state)));
+
+  const getStatusColor = (status: string) => {
+    switch(status.toLowerCase()) {
+      case 'resolved': return 'success';
+      case 'in progress': return 'warning';
+      default: return 'secondary';
+    }
+  };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 border-b border-rule pb-4">
+    <div className="space-y-10 animate-in fade-in duration-500 max-w-5xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-serif text-ink mb-2">Public Records: Issues</h1>
-          <p className="text-ink opacity-70 font-sans text-sm">Official log of infrastructure and civic reports.</p>
+          <h1 className="text-4xl md:text-5xl font-display font-bold text-nw-text-light dark:text-nw-text-dark mb-3">
+            Civic Issues Feed
+          </h1>
+          <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted max-w-2xl">
+            Live feed of infrastructure and civic issues reported by citizens across Nigeria.
+          </p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-nw-text-light-muted dark:text-nw-text-dark-muted" />
+            <input 
+              type="text" 
+              placeholder="Search issues..." 
+              className="input-field pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="relative w-full sm:w-48">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-nw-text-light-muted dark:text-nw-text-dark-muted" />
+            <select 
+              className="input-field pl-9 appearance-none"
+              value={filterState}
+              onChange={(e) => setFilterState(e.target.value)}
+            >
+              <option value="">All States</option>
+              {uniqueStates.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
-      
-      <div className="bg-paper p-6 border border-rule mb-8 flex flex-col md:flex-row gap-4 items-end">
-        <Select
-          label="Filter by Category"
-          options={[{ value: '', label: 'All Categories' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-        />
-        <Select
-          label="Filter by State"
-          options={[{ value: '', label: 'All States' }, ...states.map(s => ({ value: s, label: s }))]}
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-        />
-        <Select
-          label="Filter by Status"
-          options={[
-            { value: '', label: 'All Statuses' },
-            { value: 'submitted', label: 'Submitted' },
-            { value: 'acknowledged', label: 'Acknowledged' },
-            { value: 'in_progress', label: 'In Progress' },
-            { value: 'resolved', label: 'Resolved' },
-            { value: 'stalled', label: 'Stalled' },
-          ]}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        />
-        <Button variant="outline" onClick={() => { setCategoryId(''); setState(''); setStatus(''); }} className="w-full md:w-auto h-[38px] shrink-0">
-          Reset Filters
-        </Button>
-      </div>
-      
+
       {loading ? (
-        <div className="text-center py-12 font-sans text-sm uppercase tracking-widest text-ink">
-          Loading Records...
-        </div>
-      ) : issues.length === 0 ? (
-        <div className="text-center py-12 bg-paper border border-rule border-dashed">
-          <p className="text-ink opacity-60 font-sans text-sm">No records found matching your criteria.</p>
+        <div className="flex justify-center py-20">
+          <div className="w-8 h-8 border-4 border-nw-primary/30 border-t-nw-primary rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {issues.map(issue => (
-            <IssueCard key={issue.id} issue={issue} />
+        <div className="space-y-6">
+          {filteredIssues.map(issue => (
+            <Link key={issue.id} to={`/issues/${issue.id}`} className="block group">
+              <GlassCard hoverEffect className="p-6 transition-colors group-hover:bg-black/5 dark:group-hover:bg-white/5">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                  <div className="space-y-2 flex-grow">
+                    <div className="flex items-center gap-3">
+                      <Badge variant={getStatusColor(issue.status)}>{issue.status}</Badge>
+                      <span className="text-sm font-medium text-nw-primary dark:text-nw-primary-light">
+                        {issue.category?.name || 'General'}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-semibold text-nw-text-light dark:text-nw-text-dark group-hover:text-nw-primary dark:group-hover:text-nw-primary-light transition-colors">
+                      {issue.title}
+                    </h3>
+                    
+                    <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted line-clamp-2">
+                      {issue.description}
+                    </p>
+                    
+                    <div className="flex items-center gap-4 text-xs text-nw-text-light-muted dark:text-nw-text-dark-muted pt-2">
+                      <span className="flex items-center">
+                        <MapPin className="w-3.5 h-3.5 mr-1" />
+                        {issue.state}{issue.lga ? `, ${issue.lga}` : ''}
+                      </span>
+                      <span className="flex items-center">
+                        <Clock className="w-3.5 h-3.5 mr-1" />
+                        {formatDistanceToNow(new Date(issue.created_at), { addSuffix: true })}
+                      </span>
+                      {issue.routed_agency && (
+                        <span className="hidden md:inline">
+                          Routed to: <strong>{issue.routed_agency.name}</strong>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+            </Link>
           ))}
+          
+          {filteredIssues.length === 0 && (
+            <div className="py-20 text-center">
+              <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted">No issues found matching your filters.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

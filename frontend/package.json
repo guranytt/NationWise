@@ -10,12 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
-    "framer-motion": "^13.2.0",
+    "framer-motion": "^13.4.2",
     "lucide-react": "^1.33.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "recharts": "^3.10.1"
+    "react-hot-toast": "^2.6.1",
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.10.1",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@fingerprintjs/fingerprintjs": "^5.2.0",

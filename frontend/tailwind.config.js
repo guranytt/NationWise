@@ -4,32 +4,40 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       colors: {
-        paper: '#EDEAE0',
-        ink: '#1C1A16',
-        verified: '#1E5945',
-        pending: '#B8802E',
-        critical: '#9A3B2C',
-        rule: '#C9C4B4',
-        // Keeping primary for some generic button states if needed, but styling mostly with new tokens
-        primary: {
-          50: '#e6f6ef',
-          100: '#ccecd4',
-          200: '#99d9aa',
-          300: '#66c57f',
-          400: '#33b255',
-          500: '#008751',
-          600: '#007a49',
-          700: '#00613a',
-          800: '#00482b',
-          900: '#003620',
-        }
+        // Dark Mode (Default)
+        'nw-dark-bg': '#0A0F0D',
+        'nw-dark-surface': '#111916',
+        
+        // Light Mode
+        'nw-light-bg': '#F0FDF4',
+        'nw-light-surface': '#FFFFFF',
+        
+        // Primary Brand (Emerald/Deep Green)
+        'nw-primary': {
+          DEFAULT: '#059669', // emerald-600
+          light: '#10B981',   // emerald-500
+          dark: '#065F46',    // emerald-800
+        },
+        
+        // Text Colors
+        'nw-text-dark': '#F0FDF4',
+        'nw-text-dark-muted': '#9CA3AF',
+        'nw-text-light': '#111827',
+        'nw-text-light-muted': '#6B7280',
+        
+        // Semantic
+        'nw-accent': '#34D399', // emerald-400
+        'nw-danger': '#EF4444',
+        'nw-warning': '#F59E0B',
       },
       fontFamily: {
-        serif: ['Merriweather', 'Georgia', 'serif'],
-        sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
       },
     },
   },

@@ -52,7 +52,35 @@ async def seed_database():
             ag_data["category_id"] = category_objs[cat_name].id
             session.add(Agency(**ag_data))
             
-        await session.commit()
+        print("Seeding tracked items...")
+        from app.models.price_tracker import TrackedItem
+        items_data = [
+            {"name": "Rice", "unit": "per 50kg bag", "category": "Food", "icon": "wheat"},
+            {"name": "Beans", "unit": "per 50kg bag", "category": "Food", "icon": "bean"},
+            {"name": "Garri", "unit": "per 50kg bag", "category": "Food", "icon": "bowl"},
+            {"name": "Palm Oil", "unit": "per 25L jerrycan", "category": "Food", "icon": "droplet"},
+            {"name": "Bread", "unit": "per loaf", "category": "Food", "icon": "croissant"},
+            {"name": "Tomatoes", "unit": "per basket", "category": "Food", "icon": "apple"},
+            {"name": "Fuel (PMS)", "unit": "per litre", "category": "Fuel", "icon": "fuel"},
+            {"name": "Diesel (AGO)", "unit": "per litre", "category": "Fuel", "icon": "truck"},
+            {"name": "Cooking Gas (LPG)", "unit": "per 12.5kg", "category": "Fuel", "icon": "flame"},
+            {"name": "Cement", "unit": "per 50kg bag", "category": "Construction", "icon": "hammer"}
+        ]
+        
+        # Check if already seeded
+        from sqlalchemy.future import select
+        stmt = select(func.count()).select_from(TrackedItem)
+        result = await session.execute(stmt)
+        item_count = result.scalar_one()
+        
+        if item_count == 0:
+            for i_data in items_data:
+                session.add(TrackedItem(**i_data))
+            await session.commit()
+            print("Tracked items seeded.")
+        else:
+            print("Tracked items already seeded.")
+            
         print("Seeding complete.")
 
 if __name__ == "__main__":

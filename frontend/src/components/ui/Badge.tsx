@@ -1,23 +1,29 @@
-import type { ReactNode } from 'react';
+import React from 'react';
+import { cn } from './GlassCard';
 
-interface BadgeProps {
-  children: ReactNode;
-  variant?: 'pending' | 'verified' | 'critical' | 'neutral';
-  className?: string;
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  children: React.ReactNode;
 }
 
-export function Badge({ children, variant = 'neutral', className = '' }: BadgeProps) {
-  const baseStyle = "inline-flex items-center px-2 py-0.5 text-xs font-sans font-bold uppercase tracking-wider border";
-  
+export default function Badge({ children, variant = 'secondary', className, ...props }: BadgeProps) {
   const variants = {
-    pending: "bg-pending/10 text-pending border-pending/30",
-    verified: "bg-verified/10 text-verified border-verified/30",
-    critical: "bg-critical/10 text-critical border-critical/30",
-    neutral: "bg-paper text-ink border-rule",
+    primary: 'bg-nw-primary/20 text-nw-primary dark:bg-nw-primary/30 dark:text-nw-primary-light border-nw-primary/30',
+    secondary: 'bg-black/5 text-nw-text-light-muted dark:bg-white/10 dark:text-nw-text-dark-muted border-black/10 dark:border-white/10',
+    success: 'bg-emerald-500/20 text-emerald-700 dark:bg-emerald-500/30 dark:text-emerald-400 border-emerald-500/30',
+    warning: 'bg-nw-warning/20 text-yellow-700 dark:bg-nw-warning/30 dark:text-yellow-400 border-nw-warning/30',
+    danger: 'bg-nw-danger/20 text-red-700 dark:bg-nw-danger/30 dark:text-red-400 border-nw-danger/30',
   };
 
   return (
-    <span className={`${baseStyle} ${variants[variant]} ${className}`}>
+    <span 
+      className={cn(
+        "px-2.5 py-0.5 rounded-full text-xs font-medium border backdrop-blur-sm",
+        variants[variant],
+        className
+      )}
+      {...props}
+    >
       {children}
     </span>
   );

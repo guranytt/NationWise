@@ -1,10 +1,11 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from app.schemas.issue import IssueCreate, IssueResponse
 from app.services.issue_service import create_issue, list_issues, get_issue
+from app.services.email_service import send_issue_notification
 from app.api.deps import get_db
 
 router = APIRouter(prefix="/api/issues", tags=["Issues"])
@@ -19,10 +20,15 @@ def get_client_ip(request: Request) -> str:
 async def submit_issue(
     issue_in: IssueCreate,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
     ip_address = get_client_ip(request)
     issue = await create_issue(db, issue_in, ip_address)
+    
+    if issue.routed_agency:
+        background_tasks.add_task(send_issue_notification, issue, issue.routed_agency)
+        
     return issue
 
 @router.get("", response_model=List[IssueResponse])

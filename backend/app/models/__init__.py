@@ -9,9 +9,13 @@ from .candidate_score import CandidateScore
 from .candidate_rating import CandidateRating
 from .ai_insight import AIInsight
 from .promise import Promise
+from .candidate_chunk import CandidateChunk
+from .candidate_adventure import CandidateAdventure
+from .price_tracker import TrackedItem, PriceSubmission
 
 __all__ = [
     "Category", "Agency", "Fingerprint", "Issue", "IssueStatusHistory",
     "Candidate", "CandidateMetric", "CandidateScore", "CandidateRating",
-    "AIInsight", "Promise"
+    "AIInsight", "Promise", "CandidateChunk", "CandidateAdventure",
+    "TrackedItem", "PriceSubmission"
 ]

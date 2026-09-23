@@ -17,8 +17,10 @@ class Candidate(Base):
     election_cycle = Column(String(20), nullable=False, default="2027")
     photo_url = Column(String(512), nullable=True)
     bio = Column(Text, nullable=True)
+    pdf_storage_path = Column(String(512), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     metrics = relationship("CandidateMetric", back_populates="candidate", cascade="all, delete-orphan")
     score_snapshots = relationship("CandidateScore", back_populates="candidate", cascade="all, delete-orphan")
+    adventure = relationship("CandidateAdventure", uselist=False, back_populates="candidate", cascade="all, delete-orphan")

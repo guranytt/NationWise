@@ -1,15 +1,19 @@
 import { Outlet } from 'react-router';
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { Toaster } from 'react-hot-toast';
 
-export default function App() {
+function App() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <ThemeProvider>
+      <Outlet />
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          className: 'dark:bg-[#111916] dark:text-white dark:border dark:border-white/10 glass-card',
+        }}
+      />
+    </ThemeProvider>
   );
 }
+
+export default App;

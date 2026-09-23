@@ -1,24 +1,56 @@
+import { Link } from 'react-router';
+
 export default function Footer() {
   return (
-    <footer className="bg-paper text-ink py-12 border-t border-rule mt-12">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-rule pb-8 mb-8">
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 border border-ink bg-paper flex items-center justify-center text-ink font-serif font-bold text-lg">
-                N
-              </div>
-            <span className="font-serif font-bold text-xl text-ink tracking-tight uppercase">NationWise</span>
+    <footer className="border-t border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-1 md:col-span-2">
+            <Link to="/" className="font-display font-bold text-xl text-nw-primary dark:text-nw-primary-light mb-4 block">
+              NationWise
+            </Link>
+            <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted text-sm max-w-md">
+              Empowering citizens with AI-driven insights into political candidates, tracking household economics, and streamlining civic issue reporting.
+            </p>
           </div>
           
-          <div className="flex gap-6 font-sans text-sm uppercase tracking-widest">
-            <a href="#" className="hover:underline transition-all">About the Registry</a>
-            <a href="#" className="hover:underline transition-all">Privacy Policy</a>
-            <a href="#" className="hover:underline transition-all">Terms of Access</a>
+          <div>
+            <h3 className="font-semibold text-nw-text-light dark:text-nw-text-dark mb-4 text-sm uppercase tracking-wider">Features</h3>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <Link to="/candidates" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">Candidate Directory</Link>
+              </li>
+              <li>
+                <Link to="/compare" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">Compare Candidates</Link>
+              </li>
+              <li>
+                <Link to="/state-of-the-nation" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">State of the Nation</Link>
+              </li>
+              <li>
+                <Link to="/issues" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">Civic Issues</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-nw-text-light dark:text-nw-text-dark mb-4 text-sm uppercase tracking-wider">Legal</h3>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <a href="#" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#" className="text-nw-text-light-muted hover:text-nw-primary transition-colors dark:text-nw-text-dark-muted dark:hover:text-nw-primary-light">Data Sources</a>
+              </li>
+            </ul>
           </div>
         </div>
-        
-        <div className="font-sans text-xs text-ink opacity-70 text-center md:text-left">
-          &copy; {new Date().getFullYear()} NationWise. Official Civic Accountability Platform.
+        <div className="mt-12 pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted text-xs">
+            &copy; {new Date().getFullYear()} NationWise. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
