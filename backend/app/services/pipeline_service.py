@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from sqlalchemy import func
 from sqlalchemy.future import select
 from app.database import AsyncSessionLocal
 from app.models.candidate import Candidate
@@ -15,38 +16,58 @@ async def process_pdf_from_storage(file_path: str):
     """
     Full pipeline triggered by a Supabase Storage webhook.
     
-    Expected file_path format: "<candidate_uuid>.pdf" or "<candidate_uuid>/<filename>.pdf"
-    The candidate UUID is extracted from the first segment of the path.
+    Naming convention: Use the candidate's name as the filename.
+    Examples:
+        "Bola Tinubu.pdf"
+        "Peter Obi.pdf"
+    
+    The filename (minus .pdf) is matched against candidate full_name (case-insensitive).
+    Also still supports UUID-based filenames as a fallback.
     """
     logger.info(f"Webhook triggered: processing PDF at path '{file_path}'")
     
-    # 1. Extract candidate UUID from the file path
-    # Supports: "abc123.pdf" or "abc123/profile.pdf"
+    # 1. Extract candidate name from the file path
+    # Get just the filename (handles subfolders like "folder/name.pdf")
     path_parts = file_path.replace("\\", "/").split("/")
-    raw_uuid = path_parts[0]
+    filename = path_parts[-1]
     
-    # Strip extension if filename was used directly as the uuid
-    if raw_uuid.endswith(".pdf"):
-        raw_uuid = raw_uuid[:-4]
+    # Strip .pdf extension
+    if filename.lower().endswith(".pdf"):
+        candidate_lookup = filename[:-4].strip()
+    else:
+        candidate_lookup = filename.strip()
 
-    try:
-        from uuid import UUID
-        candidate_id = str(UUID(raw_uuid))
-    except ValueError:
-        logger.error(f"Could not parse a valid candidate UUID from file path: '{file_path}'. Expected format: '<uuid>.pdf'")
+    if not candidate_lookup:
+        logger.error(f"Empty candidate name from file path: '{file_path}'")
         return
 
-    logger.info(f"Resolved candidate_id: {candidate_id}")
+    logger.info(f"Looking up candidate by name: '{candidate_lookup}'")
 
     async with AsyncSessionLocal() as db:
-        # 2. Verify candidate exists
-        stmt = select(Candidate).where(Candidate.id == candidate_id)
+        # 2. Try to find candidate by name (case-insensitive)
+        stmt = select(Candidate).where(
+            func.lower(Candidate.full_name) == candidate_lookup.lower()
+        )
         result = await db.execute(stmt)
         candidate = result.scalar_one_or_none()
         
+        # Fallback: try as UUID
         if not candidate:
-            logger.error(f"No candidate found with id={candidate_id}")
+            try:
+                from uuid import UUID
+                candidate_uuid = str(UUID(candidate_lookup))
+                stmt = select(Candidate).where(Candidate.id == candidate_uuid)
+                result = await db.execute(stmt)
+                candidate = result.scalar_one_or_none()
+            except ValueError:
+                pass
+        
+        if not candidate:
+            logger.error(f"No candidate found matching '{candidate_lookup}'. Make sure the PDF filename matches the candidate's full name exactly.")
             return
+
+        candidate_id = str(candidate.id)
+        logger.info(f"Matched candidate: '{candidate.full_name}' (id={candidate_id})")
 
         # 3. Delete any existing chunks + adventure so we regenerate fresh
         await db.execute(
