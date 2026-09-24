@@ -38,7 +38,7 @@ async def chat_with_candidate(session: AsyncSession, candidate_id: str, candidat
 
     try:
         response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.6-flash",
             contents=prompt
         )
         return response.text
@@ -75,7 +75,7 @@ async def compare_candidates(session: AsyncSession, candidate_ids: List[str], ca
 
     try:
         response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.6-flash",
             contents=prompt
         )
         return response.text

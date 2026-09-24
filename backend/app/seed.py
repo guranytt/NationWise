@@ -77,10 +77,43 @@ async def seed_database():
             for i_data in items_data:
                 session.add(TrackedItem(**i_data))
             await session.commit()
-            print("Tracked items seeded.")
+        # Seed Candidates
+        print("Seeding candidates...")
+        from app.models.candidate import Candidate
+        import uuid
+
+        candidates_data = [
+            {"full_name": "Rufai Adekunle Omo-Aje", "party": "Action Alliance (AA)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Abbas-Bin Aliyu", "party": "Action Democratic Party (ADP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Yusuf Kabiru", "party": "Action Peoples Party (APP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Omoyele Sowore", "party": "African Action Congress (AAC)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Atiku Abubakar", "party": "African Democratic Congress (ADC)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Bola Ahmed Tinubu", "party": "All Progressives Congress (APC)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Oluseyi Abiodun Makinde", "party": "Allied Peoples Movement (APM)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Sunday Adenuga", "party": "Boot Party (BP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Moses Olusoji Adebisi", "party": "Democratic Labour Alliance (DLA)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Sunday Chibuzo Okereke", "party": "Labour Party (LP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Ada Elizabeth Fredrick Okwori", "party": "National Democratic Party (NDP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Nkem Esther Okereke", "party": "National Rescue Movement (NRM)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Peter Gregory Obi", "party": "Nigeria Democratic Congress (NDC)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Sandy Ojang Onor", "party": "Peoples Democratic Party (PDP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Donald Duke", "party": "Peoples Redemption Party (PRP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Adewole Ebenezer Adebayo", "party": "Social Democratic Party (SDP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Peter Ada Agada", "party": "Young Progressive Party (YPP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"},
+            {"full_name": "Daniel Daberechukwu Nwanyanwu", "party": "Zenith Labour Party (ZLP)", "state": "Federal", "position_sought": "President", "election_cycle": "2027"}
+        ]
+
+        stmt = select(func.count()).select_from(Candidate)
+        cand_count = (await session.execute(stmt)).scalar_one()
+
+        if cand_count == 0:
+            for cand_data in candidates_data:
+                session.add(Candidate(id=uuid.uuid4(), **cand_data))
+            await session.commit()
+            print("Candidates seeded.")
         else:
-            print("Tracked items already seeded.")
-            
+            print("Candidates already exist.")
+
         print("Seeding complete.")
 
 if __name__ == "__main__":

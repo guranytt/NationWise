@@ -39,7 +39,7 @@ async def analyze_candidate(candidate_id: UUID, db: AsyncSession = Depends(get_d
         candidate_id=candidate.id,
         insight_type="general_summary",
         content=analysis,
-        model_used="gemini-2.0-flash"
+        model_used="gemini-3.6-flash"
     )
     db.add(insight)
     await db.commit()

@@ -145,7 +145,17 @@ async def supabase_storage_webhook(
     Receives Supabase Storage webhook events.
     Triggered automatically on INSERT (new file upload) into the candidate-pdfs bucket.
     """
-    payload: Dict[str, Any] = await request.json()
+    try:
+        body_bytes = await request.body()
+        if not body_bytes:
+            logger.warning("Empty webhook payload received.")
+            return {"status": "ignored", "detail": "Empty body"}
+        import json
+        payload: Dict[str, Any] = json.loads(body_bytes.decode("utf-8"))
+    except Exception as e:
+        logger.error(f"Failed to parse webhook JSON body: {e}")
+        return {"status": "error", "detail": f"Invalid JSON: {e}"}
+
     logger.info(f"Storage webhook received: {payload}")
 
     # Supabase sends the event type and record in the payload

@@ -32,7 +32,7 @@ async def analyze_candidate_profile(candidate_data: Dict[str, Any]) -> Dict[str,
     
     try:
         response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.6-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -66,7 +66,7 @@ async def extract_promises(document_text: str, candidate_name: str) -> List[Dict
     
     try:
         response = await client.aio.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.6-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",

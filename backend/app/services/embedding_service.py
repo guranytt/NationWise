@@ -19,11 +19,13 @@ async def generate_embeddings(chunks: List[str]) -> List[List[float]]:
     
     embeddings = []
     try:
-        # In genai, we use embed_content
+        from google.genai import types
+        # Use gemini-embedding-001 configured for 768 dimensions to match DB schema
         for chunk in chunks:
             response = await client.aio.models.embed_content(
-                model="text-embedding-004",
-                contents=chunk
+                model="gemini-embedding-001",
+                contents=chunk,
+                config=types.EmbedContentConfig(output_dimensionality=768)
             )
             embeddings.append(response.embeddings[0].values)
     except Exception as e:
@@ -52,10 +54,12 @@ async def search_similar_chunks(session: AsyncSession, candidate_id: str, query:
         return []
         
     try:
+        from google.genai import types
         # Embed the query
         response = await client.aio.models.embed_content(
-            model="text-embedding-004",
-            contents=query
+            model="gemini-embedding-001",
+            contents=query,
+            config=types.EmbedContentConfig(output_dimensionality=768)
         )
         query_embedding = response.embeddings[0].values
         

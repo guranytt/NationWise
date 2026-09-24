@@ -61,7 +61,7 @@ async def generate_adventure(session: AsyncSession, candidate_id: str, candidate
     
     try:
         response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.6-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -76,7 +76,7 @@ async def generate_adventure(session: AsyncSession, candidate_id: str, candidate
             candidate_id=candidate_id,
             sections=parsed.get("sections", []),
             summary=parsed.get("summary", ""),
-            model_used="gemini-2.0-flash"
+            model_used="gemini-3.6-flash"
         )
         session.add(adventure)
         await session.commit()
