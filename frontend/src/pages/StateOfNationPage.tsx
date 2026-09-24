@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
 import { fetchJson } from '../api/client';
-import { Map, TrendingUp, AlertTriangle } from 'lucide-react';
+import { TrendingUp, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface TrackedItem {
@@ -53,7 +54,7 @@ export default function StateOfNationPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedItem || !price || !state) return;
     

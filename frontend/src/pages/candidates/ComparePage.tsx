@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getCandidates } from '../../api/candidates';
 import { fetchJson } from '../../api/client';
 import GlassCard from '../../components/ui/GlassCard';
-import { ArrowRight, Search, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function ComparePage() {

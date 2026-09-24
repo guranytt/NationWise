@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { getCategories } from '../../api/categories';
-import { getLocations } from '../../api/locations';
-import { createIssue } from '../../api/issues';
-import GlassCard from '../../components/ui/GlassCard';
-import { MapPin, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
+import { getCategories } from '../api/categories';
+import { getStates, getLgas } from '../api/locations';
+import { createIssue } from '../api/issues';
+import GlassCard from '../components/ui/GlassCard';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ReportIssuePage() {
@@ -21,26 +22,20 @@ export default function ReportIssuePage() {
 
   useEffect(() => {
     getCategories().then(setCategories);
-    getLocations().then(data => {
-      setStates(data.map(d => d.state));
-    });
+    getStates().then(setStates);
   }, []);
 
   useEffect(() => {
     if (state) {
-      getLocations().then(data => {
-        const stateData = data.find(d => d.state === state);
-        if (stateData) {
-          setLgas(stateData.lgas);
-        } else {
-          setLgas([]);
-        }
-      });
+      getLgas(state).then(setLgas).catch(() => setLgas([]));
+      setLga('');
+    } else {
+      setLgas([]);
       setLga('');
     }
   }, [state]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     
@@ -50,8 +45,8 @@ export default function ReportIssuePage() {
         description,
         category_id: categoryId,
         state,
-        lga: lga || undefined,
-        status: 'Reported'
+        lga: lga || '',
+        fingerprint_visitor_id: localStorage.getItem('nw_visitor_id') || 'anon-' + Math.random().toString(36).substring(7),
       });
       setSuccess(true);
       toast.success("Issue reported successfully!");

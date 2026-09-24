@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send } from 'lucide-react';
 import { cn } from './GlassCard';
 import ReactMarkdown from 'react-markdown';
@@ -85,7 +85,9 @@ export default function ChatWidget({ candidateId }: { candidateId: string }) {
                   : "bg-black/5 dark:bg-white/10 text-nw-text-light dark:text-nw-text-dark rounded-tl-sm"
               )}>
                 {msg.role === 'ai' ? (
-                  <ReactMarkdown className="prose dark:prose-invert prose-sm prose-p:my-1 prose-ul:my-1">{msg.content}</ReactMarkdown>
+                  <div className="prose dark:prose-invert prose-sm prose-p:my-1 prose-ul:my-1">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
                 ) : (
                   msg.content
                 )}

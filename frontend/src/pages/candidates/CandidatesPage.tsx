@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { getCandidates, type CandidateList } from '../../api/candidates';
+import { getCandidates, type Candidate } from '../../api/candidates';
 import GlassCard from '../../components/ui/GlassCard';
 import Badge from '../../components/ui/Badge';
 import { Search, User, Filter } from 'lucide-react';
 
 export default function CandidatesPage() {
-  const [candidates, setCandidates] = useState<CandidateList[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterParty, setFilterParty] = useState('');

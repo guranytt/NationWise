@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router';
-import { Shield, TrendingUp, Search, ArrowRight, Activity, Users } from 'lucide-react';
+import { Shield, TrendingUp, ArrowRight, Users } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 
 export default function LandingPage() {

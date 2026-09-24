@@ -3,7 +3,7 @@ import { fetchJson } from './client';
 export interface AdventureSection {
   title: string;
   content: string;
-  order: int;
+  order: number;
 }
 
 export interface AdventureResponse {

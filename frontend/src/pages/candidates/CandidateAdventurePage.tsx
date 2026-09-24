@@ -27,7 +27,7 @@ export default function CandidateAdventurePage() {
       setLoading(true);
       const [candData, advData] = await Promise.all([
         getCandidateDetail(id!),
-        getCandidateAdventure(id!).catch(e => null) // Adventure might not exist yet
+        getCandidateAdventure(id!).catch(() => null) // Adventure might not exist yet
       ]);
       setCandidate(candData);
       setAdventure(advData);

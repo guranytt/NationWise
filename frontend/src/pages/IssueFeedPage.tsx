@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { getIssues, type IssueList } from '../../api/issues';
+import { getIssues } from '../api/issues';
+import type { Issue } from '../types';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
 import { Clock, MapPin, Search, Filter } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function IssueFeedPage() {
-  const [issues, setIssues] = useState<IssueList[]>([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterState, setFilterState] = useState('');
