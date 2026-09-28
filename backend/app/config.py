@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     DEBUG: bool = False
     GEMINI_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
     RESEND_API_KEY: str = ""
     EMAIL_FROM: str = "NationWise Alerts <alerts@nationwise.ng>"
     SUPABASE_URL: str = ""
