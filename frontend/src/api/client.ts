@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+export const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? 'https://nationwise-production.up.railway.app/api' : '/api');
 
 export async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${url}`, {
