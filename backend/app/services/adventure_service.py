@@ -1,4 +1,5 @@
 import json
+import asyncio
 import logging
 from typing import Dict, Any, List
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -60,32 +61,41 @@ async def generate_adventure(session: AsyncSession, candidate_id: str, candidate
     """
     
     try:
-        from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-        
-        async def generate_with_fallback():
-            models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"]
-            last_err = None
-            for model_name in models:
-                try:
-                    logger.info(f"Attempting to generate adventure with {model_name}...")
-                    response = await client.aio.models.generate_content(
-                        model=model_name,
-                        contents=prompt,
-                        config=types.GenerateContentConfig(
-                            response_mime_type="application/json",
-                            temperature=0.2,
+        async def generate_with_retry():
+            """Retry with exponential backoff across multiple models."""
+            models = ["gemini-3.6-flash", "gemini-3.8-flash"]
+            max_attempts = 5
+            base_delay = 10  # seconds
+            
+            for attempt in range(max_attempts):
+                for model_name in models:
+                    try:
+                        logger.info(f"Attempt {attempt+1}/{max_attempts}: generating adventure with {model_name}...")
+                        response = await client.aio.models.generate_content(
+                            model=model_name,
+                            contents=prompt,
+                            config=types.GenerateContentConfig(
+                                response_mime_type="application/json",
+                                temperature=0.2,
+                            )
                         )
-                    )
-                    return response, model_name
-                except Exception as e:
-                    last_err = e
-                    logger.warning(f"Failed with {model_name}: {e}")
-                    # If it's a 4xx error (other than 429), don't retry other models
-                    if hasattr(e, 'status_code') and 400 <= e.status_code < 500 and e.status_code != 429:
-                        break
-            raise last_err
+                        logger.info(f"Adventure generated successfully with {model_name} on attempt {attempt+1}")
+                        return response, model_name
+                    except Exception as e:
+                        err_code = getattr(e, 'status_code', None) or getattr(e, 'code', None)
+                        logger.warning(f"Attempt {attempt+1}, model {model_name} failed: {e}")
+                        # Non-retriable client error (except 429 rate limit)
+                        if err_code and 400 <= int(err_code) < 500 and int(err_code) != 429:
+                            raise
+                
+                # Exponential backoff before next round of attempts
+                delay = base_delay * (2 ** attempt)  # 10, 20, 40, 80, 160 seconds
+                logger.info(f"All models busy. Waiting {delay}s before retry {attempt+2}...")
+                await asyncio.sleep(delay)
+            
+            raise Exception(f"Adventure generation failed after {max_attempts} attempts across all models")
 
-        response, model_used = await generate_with_fallback()
+        response, model_used = await generate_with_retry()
         
         parsed = json.loads(response.text)
         
@@ -102,5 +112,5 @@ async def generate_adventure(session: AsyncSession, candidate_id: str, candidate
         return adventure
         
     except Exception as e:
-        logger.error(f"Failed to generate adventure: {e}")
+        logger.error(f"Failed to generate adventure after all retries: {e}")
         return None
