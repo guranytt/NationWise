@@ -60,14 +60,32 @@ async def generate_adventure(session: AsyncSession, candidate_id: str, candidate
     """
     
     try:
-        response = await client.aio.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.2,
-            )
-        )
+        from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+        
+        async def generate_with_fallback():
+            models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest"]
+            last_err = None
+            for model_name in models:
+                try:
+                    logger.info(f"Attempting to generate adventure with {model_name}...")
+                    response = await client.aio.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                            temperature=0.2,
+                        )
+                    )
+                    return response, model_name
+                except Exception as e:
+                    last_err = e
+                    logger.warning(f"Failed with {model_name}: {e}")
+                    # If it's a 4xx error (other than 429), don't retry other models
+                    if hasattr(e, 'status_code') and 400 <= e.status_code < 500 and e.status_code != 429:
+                        break
+            raise last_err
+
+        response, model_used = await generate_with_fallback()
         
         parsed = json.loads(response.text)
         
@@ -76,7 +94,7 @@ async def generate_adventure(session: AsyncSession, candidate_id: str, candidate
             candidate_id=candidate_id,
             sections=parsed.get("sections", []),
             summary=parsed.get("summary", ""),
-            model_used="gemini-3.6-flash"
+            model_used=model_used
         )
         session.add(adventure)
         await session.commit()
