@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
 import { getCandidates, type Candidate } from '../../api/candidates';
 import CandidatePortraitCard from '../../components/candidates/CandidatePortraitCard';
 import { Search, Filter } from 'lucide-react';
