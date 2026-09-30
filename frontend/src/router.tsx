@@ -7,6 +7,7 @@ import ReportIssuePage from './pages/ReportIssuePage';
 import IssueDetailPage from './pages/IssueDetailPage';
 import AdminStatusPage from './pages/admin/AdminStatusPage';
 import CandidatesPage from './pages/candidates/CandidatesPage';
+import CandidateProfilePage from './pages/candidates/CandidateProfilePage';
 import CandidateAdventurePage from './pages/candidates/CandidateAdventurePage';
 import ComparePage from './pages/candidates/ComparePage';
 import StateOfNationPage from './pages/StateOfNationPage';
@@ -26,7 +27,8 @@ export const router = createBrowserRouter([
           { path: 'issues/:id', element: <IssueDetailPage /> },
           { path: 'admin/issues/:id', element: <AdminStatusPage /> },
           { path: 'candidates', element: <CandidatesPage /> },
-          { path: 'candidates/:id', element: <CandidateAdventurePage /> },
+          { path: 'candidates/:id', element: <CandidateProfilePage /> },
+          { path: 'candidates/:id/adventure', element: <CandidateAdventurePage /> },
           { path: 'compare', element: <ComparePage /> },
           { path: 'state-of-the-nation', element: <StateOfNationPage /> }, 
         ]

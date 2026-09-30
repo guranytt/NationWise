@@ -73,9 +73,14 @@ export default function CandidateProfilePage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <Link to="/candidates" className="inline-flex items-center text-ink font-sans text-sm hover:underline mb-8">
-        &larr; Back to Registry
-      </Link>
+      <div className="flex items-center justify-between mb-8">
+        <Link to="/candidates" className="inline-flex items-center text-ink font-sans text-sm hover:underline">
+          &larr; Back to Registry
+        </Link>
+        <Link to={`/candidates/${id}/adventure`} className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-sans text-sm font-semibold rounded-full shadow-lg shadow-emerald-600/20 transition-all hover:scale-105">
+          Start AI Adventure ✨
+        </Link>
+      </div>
       
       <div className="border border-rule bg-paper mb-12">
         <div className="md:flex">

@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { getCandidates, type Candidate } from '../../api/candidates';
-import GlassCard from '../../components/ui/GlassCard';
-import Badge from '../../components/ui/Badge';
-import { Search, User, Filter } from 'lucide-react';
+import CandidatePortraitCard from '../../components/candidates/CandidatePortraitCard';
+import { Search, Filter } from 'lucide-react';
 
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -81,38 +80,8 @@ export default function CandidatesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredCandidates.map(candidate => (
-            <Link key={candidate.id} to={`/candidates/${candidate.id}`}>
-              <GlassCard hoverEffect className="h-full flex flex-col p-5">
-                <div className="flex items-start justify-between mb-4">
-                  {candidate.photo_url ? (
-                    <img 
-                      src={candidate.photo_url} 
-                      alt={candidate.full_name} 
-                      className="w-16 h-16 rounded-full object-cover border border-black/10 dark:border-white/10"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center">
-                      <User className="w-8 h-8 text-nw-text-light-muted dark:text-nw-text-dark-muted" />
-                    </div>
-                  )}
-                  <Badge variant="primary">{candidate.party}</Badge>
-                </div>
-                
-                <div className="mt-auto">
-                  <h3 className="font-semibold text-lg text-nw-text-light dark:text-nw-text-dark line-clamp-1">
-                    {candidate.full_name}
-                  </h3>
-                  <p className="text-sm text-nw-text-light-muted dark:text-nw-text-dark-muted mt-1">
-                    {candidate.position_sought}
-                  </p>
-                  <div className="mt-3 text-xs text-nw-text-light-muted dark:text-nw-text-dark-muted flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2" />
-                    {candidate.state}{candidate.lga ? `, ${candidate.lga}` : ''}
-                  </div>
-                </div>
-              </GlassCard>
-            </Link>
+          {filteredCandidates.map((candidate, idx) => (
+            <CandidatePortraitCard key={candidate.id} candidate={candidate} index={idx} />
           ))}
           
           {filteredCandidates.length === 0 && (

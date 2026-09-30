@@ -5,7 +5,8 @@ import { getCandidateAdventure, type AdventureResponse } from '../../api/adventu
 import type { CandidateDetail } from '../../api/candidates';
 import GlassCard from '../../components/ui/GlassCard';
 import Badge from '../../components/ui/Badge';
-import AccordionSection from '../../components/ui/AccordionSection';
+import CoverflowCarousel from '../../components/ui/CoverflowCarousel';
+import ParticleField from '../../components/ui/ParticleField';
 import { ArrowLeft, ExternalLink, User } from 'lucide-react';
 import ChatWidget from '../../components/ui/ChatWidget';
 
@@ -59,10 +60,17 @@ export default function CandidateAdventurePage() {
   const { candidate: cData } = candidate;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500">
-      <Link to="/candidates" className="inline-flex items-center text-sm text-nw-text-light-muted dark:text-nw-text-dark-muted hover:text-nw-primary transition-colors">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Directory
-      </Link>
+    <>
+      <ParticleField className="fixed inset-0 z-[-1]" />
+      <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500 relative z-10">
+        <div className="flex items-center justify-between">
+        <Link to={`/candidates/${id}`} className="inline-flex items-center text-sm text-nw-text-light-muted dark:text-nw-text-dark-muted hover:text-nw-primary transition-colors">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dossier
+        </Link>
+        <Link to="/candidates" className="inline-flex items-center text-sm text-nw-text-light-muted dark:text-nw-text-dark-muted hover:text-nw-primary transition-colors">
+          Directory
+        </Link>
+      </div>
 
       <div className="flex flex-col md:flex-row gap-8 items-start">
         {cData.photo_url ? (
@@ -100,24 +108,12 @@ export default function CandidateAdventurePage() {
         </div>
       </div>
       {adventure ? (
-        <GlassCard className="p-0 overflow-hidden">
-          <div className="p-8 md:p-12 border-b border-black/10 dark:border-white/10 bg-nw-primary/5 dark:bg-nw-primary/10">
-            <h2 className="text-xl font-medium text-nw-text-light dark:text-nw-text-dark italic leading-relaxed">
-              "{adventure.summary}"
-            </h2>
+        <div className="w-full relative py-8">
+          <div className="absolute inset-0 flex items-center justify-center text-nw-text-light-muted/10 dark:text-nw-text-dark-muted/5 font-display text-[150px] font-bold z-0 select-none">
+            {candidate.candidate.party}
           </div>
-          
-          <div className="px-8 md:px-12 py-4">
-            {adventure.sections.sort((a, b) => a.order - b.order).map((section, idx) => (
-              <AccordionSection 
-                key={idx}
-                title={section.title}
-                content={section.content}
-                defaultOpen={idx === 0}
-              />
-            ))}
-          </div>
-        </GlassCard>
+          <CoverflowCarousel sections={adventure.sections} />
+        </div>
       ) : (
         <GlassCard className="py-20 text-center">
           <p className="text-nw-text-light-muted dark:text-nw-text-dark-muted mb-4">
@@ -130,6 +126,7 @@ export default function CandidateAdventurePage() {
       )}
 
       {id && <ChatWidget candidateId={id} />}
-    </div>
+      </div>
+    </>
   );
 }
